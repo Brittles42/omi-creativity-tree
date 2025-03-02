@@ -1,5 +1,15 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { JWT } from 'next-auth/jwt'
+import { Session } from 'next-auth'
+
+interface CustomSession extends Session {
+  user: {
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+  }
+}
 
 export default NextAuth({
   providers: [
@@ -39,8 +49,10 @@ export default NextAuth({
     signIn: '/auth/signin',
   },
   callbacks: {
-    async session({ session, token }) {
-      session.user.id = token.sub
+    async session({ session, token }: { session: CustomSession; token: JWT }) {
+      if (session.user) {
+        session.user.id = token.sub || '1'  // Fallback for test user
+      }
       return session
     }
   }
