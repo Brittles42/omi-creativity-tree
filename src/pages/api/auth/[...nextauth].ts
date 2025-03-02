@@ -10,15 +10,24 @@ export default NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        // This is where we'll add OMI auth later
-        // For now, basic test auth
-        if (credentials?.username === 'test' && credentials?.password === 'test') {
-          return {
-            id: '1',
-            name: 'Test User',
-            email: 'test@example.com',
+        // Test auth for development
+        if (process.env.NODE_ENV === 'development' || !process.env.OMI_CLIENT_ID) {
+          if (credentials?.username === process.env.TEST_USERNAME && 
+              credentials?.password === process.env.TEST_PASSWORD) {
+            return {
+              id: '1',
+              name: 'Test User',
+              email: 'test@example.com',
+            }
           }
         }
+        
+        // TODO: Add OMI auth here
+        // Will need:
+        // - OMI_CLIENT_ID
+        // - OMI_CLIENT_SECRET
+        // - OMI_AUTH_URL
+        
         return null
       }
     })
@@ -31,7 +40,6 @@ export default NextAuth({
   },
   callbacks: {
     async session({ session, token }) {
-      // Add user info to session
       session.user.id = token.sub
       return session
     }
