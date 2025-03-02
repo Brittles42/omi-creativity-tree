@@ -15,7 +15,8 @@
     "@tailwindcss/forms": "latest",
     "tailwindcss": "latest",
     "autoprefixer": "latest",
-    "postcss": "latest"
+    "postcss": "latest",
+    "langchain": "latest"
   },
   "devDependencies": {
     "typescript": "latest",

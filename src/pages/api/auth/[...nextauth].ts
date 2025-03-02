@@ -1,13 +1,13 @@
-import NextAuth from 'next-auth'
+import NextAuth, { DefaultSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { JWT } from 'next-auth/jwt'
-import { Session } from 'next-auth'
 
-interface CustomSession extends Session {
-  user: {
-    id?: string;
-    name?: string | null;
-    email?: string | null;
+// Extend the built-in session type
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+    } & DefaultSession["user"]
   }
 }
 
@@ -49,9 +49,9 @@ export default NextAuth({
     signIn: '/auth/signin',
   },
   callbacks: {
-    async session({ session, token }: { session: CustomSession; token: JWT }) {
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub || '1'  // Fallback for test user
+        session.user.id = token.sub || '1'
       }
       return session
     }
