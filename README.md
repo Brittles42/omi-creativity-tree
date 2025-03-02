@@ -2,6 +2,51 @@
 
 An interactive, real-time visualization of ideas and conversations captured through OMI, with seamless transitions between web and VR experiences.
 
+## 🚀 Getting Started
+
+### Environment Variables
+
+```bash
+# Required for NextAuth.js
+NEXTAUTH_URL=https://your-domain.com        # In development: http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key             # Generate a secure random string
+
+# OMI Integration (After registering app)
+OMI_CLIENT_ID=your-omi-client-id           # From OMI App Store
+OMI_CLIENT_SECRET=your-omi-client-secret   # From OMI App Store
+OMI_AUTH_URL=https://omi-auth-url          # OMI authentication endpoint
+
+# Development Only (remove in production)
+TEST_USERNAME=test                          # Temporary test login
+TEST_PASSWORD=test                          # Temporary test login
+```
+
+### OMI Integration Steps
+
+1. **Register Your App**
+   - Go to OMI App Store
+   - Click "Create New App"
+   - Fill in app details:
+     - Name: "Creativity Tree"
+     - Description: "Visualize your ideas in a magical 3D tree"
+     - Redirect URIs: 
+       - Development: `http://localhost:3000/api/auth/callback/omi`
+       - Production: `https://your-domain.com/api/auth/callback/omi`
+
+2. **Get Credentials**
+   - Save your Client ID and Client Secret
+   - Add them to your environment variables
+
+3. **Deploy Your App**
+   - Deploy to Vercel or your preferred platform
+   - Set all environment variables in your deployment platform
+   - Update the OMI App Store with your production URL
+
+4. **Launch Process**
+   - Test thoroughly in development
+   - Submit for OMI review
+   - Once approved, your app will appear in the OMI App Store
+
 ## 📋 Project Phases
 
 ### Phase 1: Core Web Implementation
