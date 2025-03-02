@@ -4,8 +4,24 @@ import { OrbitControls, useGLTF, Sparkles } from '@react-three/drei'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
 
-function Branch({ position, rotation, scale = [0.1, 1, 0.1] }) {
-  const meshRef = useRef()
+type Vector3 = [number, number, number]
+
+interface BranchProps {
+  position: Vector3
+  rotation: Vector3
+  scale?: Vector3
+}
+
+interface LeavesProps {
+  position: Vector3
+}
+
+interface OwlProps {
+  position?: Vector3
+}
+
+function Branch({ position, rotation, scale = [0.1, 1, 0.1] }: BranchProps) {
+  const meshRef = useRef<THREE.Mesh>(null)
 
   useEffect(() => {
     if (meshRef.current) {
@@ -34,8 +50,8 @@ function Branch({ position, rotation, scale = [0.1, 1, 0.1] }) {
   )
 }
 
-function Leaves({ position }) {
-  const meshRef = useRef()
+function Leaves({ position }: LeavesProps) {
+  const meshRef = useRef<THREE.Mesh>(null)
 
   useEffect(() => {
     if (meshRef.current) {
@@ -65,13 +81,15 @@ function Leaves({ position }) {
   )
 }
 
-function Owl({ position = [2, 3, 0] }) {
-  const meshRef = useRef()
+function Owl({ position = [2, 3, 0] }: OwlProps) {
+  const meshRef = useRef<THREE.Group>(null)
   
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
-    meshRef.current.position.y = position[1] + Math.sin(time) * 0.1
-    meshRef.current.rotation.y = Math.sin(time * 0.5) * 0.1
+    if (meshRef.current) {
+      meshRef.current.position.y = position[1] + Math.sin(time) * 0.1
+      meshRef.current.rotation.y = Math.sin(time * 0.5) * 0.1
+    }
   })
 
   return (
@@ -95,11 +113,13 @@ function Owl({ position = [2, 3, 0] }) {
 }
 
 function Tree() {
-  const groupRef = useRef()
+  const groupRef = useRef<THREE.Group>(null)
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
-    groupRef.current.rotation.y = Math.sin(time * 0.1) * 0.05
+    if (groupRef.current) {
+      groupRef.current.rotation.y = Math.sin(time * 0.1) * 0.05
+    }
   })
 
   return (
