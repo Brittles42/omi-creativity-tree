@@ -51,9 +51,9 @@ export default function Home() {
       </nav>
 
       {/* Main Content */}
-      <main className="relative">
+      <main className="relative pt-16"> {/* Add padding-top to account for nav */}
         {/* Tree takes full screen */}
-        <div className="h-screen">
+        <div className="aspect-square w-full max-h-[90vh]"> {/* Make it square and limit height */}
           <MagicalTree />
         </div>
 
