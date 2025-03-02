@@ -51,14 +51,14 @@ export default function Home() {
       </nav>
 
       {/* Main Content */}
-      <main className="relative pt-16"> {/* Add padding-top to account for nav */}
-        {/* Tree takes full screen */}
-        <div className="aspect-square w-full max-h-[90vh]"> {/* Make it square and limit height */}
+      <main className="relative">
+        {/* Hero section with tree */}
+        <section className="h-[50vh] w-full relative">
           <MagicalTree />
-        </div>
+        </section>
 
-        {/* Stats/Controls - floating at the bottom */}
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-7xl px-4">
+        {/* Stats/Controls - now below the hero */}
+        <section className="w-full max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-black/30 backdrop-blur-sm rounded-lg shadow-xl p-6 border border-cyan-500/20">
               <h3 className="text-xl font-bold text-white mb-2">Ideas</h3>
@@ -73,7 +73,7 @@ export default function Home() {
               <p className="text-4xl bg-gradient-to-r from-teal-400 to-green-400 text-transparent bg-clip-text">0%</p>
             </div>
           </div>
-        </div>
+        </section>
       </main>
     </div>
   )
