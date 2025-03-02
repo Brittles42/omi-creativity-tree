@@ -37,16 +37,14 @@ export default NextAuth({
           }
         })
 
-        // Test auth for development
-        if (process.env.NODE_ENV === 'development' || !process.env.OMI_CLIENT_ID) {
-          if (credentials?.username === process.env.TEST_USERNAME && 
-              credentials?.password === process.env.TEST_PASSWORD) {
-            console.log('Auth successful')
-            return {
-              id: '1',
-              name: 'Test User',
-              email: 'test@example.com',
-            }
+        // Test auth
+        if (credentials?.username === process.env.TEST_USERNAME && 
+            credentials?.password === process.env.TEST_PASSWORD) {
+          console.log('Auth successful')
+          return {
+            id: '1',
+            name: 'Test User',
+            email: 'test@example.com',
           }
         }
         
@@ -56,15 +54,25 @@ export default NextAuth({
     })
   ],
   session: {
-    strategy: 'jwt'
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
   },
   pages: {
     signIn: '/auth/signin',
   },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+      }
+      return token
+    },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub || '1'
+        session.user.id = token.id as string
       }
       return session
     }
