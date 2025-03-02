@@ -1,53 +1,78 @@
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 export default function Home() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
+  const router = useRouter()
 
-  if (session) {
+  if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-        <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-          <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-            <div className="max-w-md mx-auto">
-              <div className="divide-y divide-gray-200">
-                <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                  <p>Signed in as {session.user?.email}</p>
-                  <button
-                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                    onClick={() => signOut()}
-                  >
-                    Sign out
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     )
   }
 
+  if (!session) {
+    router.push('/auth/signin')
+    return null
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-      <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-          <div className="max-w-md mx-auto">
-            <div className="divide-y divide-gray-200">
-              <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                <h2 className="text-2xl font-bold mb-4">Welcome to Creativity Tree</h2>
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                  onClick={() => signIn('credentials')}
-                >
-                  Sign in
-                </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900">
+      {/* Navigation */}
+      <nav className="bg-gray-800 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <span className="text-2xl font-bold text-white">🌳 Creativity Tree</span>
               </div>
+            </div>
+            <div className="flex items-center">
+              <span className="text-gray-300 mr-4">
+                {session.user?.email}
+              </span>
+              <button
+                onClick={() => signOut()}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {/* Tree Visualization Placeholder */}
+        <div className="bg-gray-700 rounded-lg shadow-xl p-8 mb-8">
+          <div className="text-center">
+            <div className="text-5xl mb-4">🌳</div>
+            <h2 className="text-2xl font-bold text-white mb-4">Your Creativity Tree</h2>
+            <p className="text-gray-300">
+              Tree visualization coming soon! This is where your ideas will grow and branch out.
+            </p>
+          </div>
+        </div>
+
+        {/* Stats/Controls */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-gray-700 rounded-lg shadow-xl p-6">
+            <h3 className="text-xl font-bold text-white mb-2">Ideas</h3>
+            <p className="text-4xl text-blue-400">0</p>
+          </div>
+          <div className="bg-gray-700 rounded-lg shadow-xl p-6">
+            <h3 className="text-xl font-bold text-white mb-2">Connections</h3>
+            <p className="text-4xl text-green-400">0</p>
+          </div>
+          <div className="bg-gray-700 rounded-lg shadow-xl p-6">
+            <h3 className="text-xl font-bold text-white mb-2">Growth</h3>
+            <p className="text-4xl text-purple-400">0%</p>
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
