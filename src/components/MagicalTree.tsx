@@ -210,7 +210,7 @@ export default function MagicalTree() {
   return (
     <div className="w-full h-full bg-gradient-to-b from-blue-900 via-purple-900 to-black">
       <Canvas
-        camera={{ position: [8, 8, 8], fov: 45 }} {/* Adjusted camera for better view */}
+        camera={{ position: [8, 8, 8], fov: 45 }}
         shadows
         className="w-full h-full"
       >
