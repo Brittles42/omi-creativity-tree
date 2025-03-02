@@ -65,9 +65,6 @@ export default function SignIn() {
                     Sign In
                   </button>
                 </form>
-                <p className="mt-4 text-sm text-gray-500 text-center">
-                  Test credentials: username: test, password: test
-                </p>
               </div>
             </div>
           </div>

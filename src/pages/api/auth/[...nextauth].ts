@@ -20,10 +20,19 @@ export default NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        // Debug log
+        console.log('Auth attempt:', {
+          username: credentials?.username,
+          expectedUsername: process.env.TEST_USERNAME,
+          isDev: process.env.NODE_ENV === 'development',
+          hasOmiClient: !!process.env.OMI_CLIENT_ID
+        })
+
         // Test auth for development
         if (process.env.NODE_ENV === 'development' || !process.env.OMI_CLIENT_ID) {
           if (credentials?.username === process.env.TEST_USERNAME && 
               credentials?.password === process.env.TEST_PASSWORD) {
+            console.log('Auth successful')
             return {
               id: '1',
               name: 'Test User',
@@ -32,12 +41,7 @@ export default NextAuth({
           }
         }
         
-        // TODO: Add OMI auth here
-        // Will need:
-        // - OMI_CLIENT_ID
-        // - OMI_CLIENT_SECRET
-        // - OMI_AUTH_URL
-        
+        console.log('Auth failed')
         return null
       }
     })
@@ -55,5 +59,6 @@ export default NextAuth({
       }
       return session
     }
-  }
+  },
+  debug: true // Enable debug messages
 })
