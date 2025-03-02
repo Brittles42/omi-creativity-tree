@@ -19,13 +19,22 @@ export default NextAuth({
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
-        // Debug log
+      async authorize(credentials, req) {
+        // Debug logs
+        console.log('Environment:', {
+          NODE_ENV: process.env.NODE_ENV,
+          NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+          TEST_USERNAME: process.env.TEST_USERNAME,
+          HAS_TEST_PASSWORD: !!process.env.TEST_PASSWORD,
+        })
+
         console.log('Auth attempt:', {
-          username: credentials?.username,
-          expectedUsername: process.env.TEST_USERNAME,
-          isDev: process.env.NODE_ENV === 'development',
-          hasOmiClient: !!process.env.OMI_CLIENT_ID
+          providedUsername: credentials?.username,
+          providedPassword: credentials?.password,
+          matches: {
+            username: credentials?.username === process.env.TEST_USERNAME,
+            password: credentials?.password === process.env.TEST_PASSWORD
+          }
         })
 
         // Test auth for development
