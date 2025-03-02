@@ -54,14 +54,14 @@ function Branch({ position, rotation, scale = [0.1, 1, 0.1] }: BranchProps) {
 
 function Leaves({ position, color }: LeavesProps) {
   const meshRef = useRef<THREE.Mesh>(null)
+  const materialRef = useRef<THREE.MeshPhysicalMaterial>(null)
   const hue = useRef(Math.random())
   
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
-    if (meshRef.current) {
+    if (meshRef.current && materialRef.current) {
       hue.current += 0.001
-      const color = new THREE.Color().setHSL(hue.current % 1, 0.8, 0.5)
-      meshRef.current.material.color = color
+      materialRef.current.color.setHSL(hue.current % 1, 0.8, 0.5)
       meshRef.current.scale.x = 1 + Math.sin(time * 0.5) * 0.1
       meshRef.current.scale.y = 1 + Math.sin(time * 0.5 + 0.5) * 0.1
       meshRef.current.scale.z = 1 + Math.sin(time * 0.5 + 1) * 0.1
@@ -88,6 +88,7 @@ function Leaves({ position, color }: LeavesProps) {
     >
       <sphereGeometry args={[0.3, 16, 16]} />
       <meshPhysicalMaterial
+        ref={materialRef}
         color={color || "#00ff88"}
         roughness={0.2}
         metalness={0.8}
