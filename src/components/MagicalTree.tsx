@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, useGLTF, Sparkles } from '@react-three/drei'
+import { OrbitControls, useGLTF, Sparkles, Effects } from '@react-three/drei'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
 
@@ -14,6 +14,7 @@ interface BranchProps {
 
 interface LeavesProps {
   position: Vector3
+  color?: string
 }
 
 interface OwlProps {
@@ -39,19 +40,33 @@ function Branch({ position, rotation, scale = [0.1, 1, 0.1] }: BranchProps) {
       ref={meshRef}
       position={position}
       rotation={rotation}
+      scale={scale}
     >
       <cylinderGeometry args={[0.1, 0.08, 1, 8]} />
       <meshStandardMaterial
-        color="#4a9c2d"
-        roughness={0.8}
-        metalness={0.2}
+        color="#1a1a2e"
+        roughness={0.4}
+        metalness={0.6}
       />
     </mesh>
   )
 }
 
-function Leaves({ position }: LeavesProps) {
+function Leaves({ position, color }: LeavesProps) {
   const meshRef = useRef<THREE.Mesh>(null)
+  const hue = useRef(Math.random())
+  
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    if (meshRef.current) {
+      hue.current += 0.001
+      const color = new THREE.Color().setHSL(hue.current % 1, 0.8, 0.5)
+      meshRef.current.material.color = color
+      meshRef.current.scale.x = 1 + Math.sin(time * 0.5) * 0.1
+      meshRef.current.scale.y = 1 + Math.sin(time * 0.5 + 0.5) * 0.1
+      meshRef.current.scale.z = 1 + Math.sin(time * 0.5 + 1) * 0.1
+    }
+  })
 
   useEffect(() => {
     if (meshRef.current) {
@@ -72,10 +87,12 @@ function Leaves({ position }: LeavesProps) {
       position={position}
     >
       <sphereGeometry args={[0.3, 16, 16]} />
-      <meshStandardMaterial
-        color="#68b246"
-        roughness={0.8}
-        metalness={0.1}
+      <meshPhysicalMaterial
+        color={color || "#00ff88"}
+        roughness={0.2}
+        metalness={0.8}
+        transmission={0.5}
+        thickness={0.5}
       />
     </mesh>
   )
@@ -94,19 +111,17 @@ function Owl({ position = [2, 3, 0] }: OwlProps) {
 
   return (
     <group ref={meshRef} position={position}>
-      {/* Simple owl shape */}
       <mesh>
         <sphereGeometry args={[0.3, 16, 16]} />
         <meshStandardMaterial color="#8b4513" />
       </mesh>
-      {/* Eyes */}
       <mesh position={[0.1, 0.1, 0.2]}>
         <sphereGeometry args={[0.08, 16, 16]} />
-        <meshStandardMaterial color="#fff" />
+        <meshStandardMaterial color="#fff" emissive="#fff" emissiveIntensity={0.5} />
       </mesh>
       <mesh position={[-0.1, 0.1, 0.2]}>
         <sphereGeometry args={[0.08, 16, 16]} />
-        <meshStandardMaterial color="#fff" />
+        <meshStandardMaterial color="#fff" emissive="#fff" emissiveIntensity={0.5} />
       </mesh>
     </group>
   )
@@ -131,17 +146,17 @@ function Tree() {
         scale={[0.2, 2, 0.2]}
       />
 
-      {/* Main branches */}
-      {[...Array(5)].map((_, i) => {
-        const angle = (i / 5) * Math.PI * 2
+      {/* Main branches - more of them! */}
+      {[...Array(12)].map((_, i) => {
+        const angle = (i / 12) * Math.PI * 2
         const y = 1 + i * 0.3
         return (
           <Branch
             key={i}
             position={[
-              Math.cos(angle) * 0.5,
+              Math.cos(angle) * (0.5 + i * 0.1),
               y,
-              Math.sin(angle) * 0.5
+              Math.sin(angle) * (0.5 + i * 0.1)
             ]}
             rotation={[
               Math.PI * 0.2,
@@ -152,11 +167,11 @@ function Tree() {
         )
       })}
 
-      {/* Leaves */}
-      {[...Array(20)].map((_, i) => {
-        const angle = (i / 20) * Math.PI * 2
-        const y = 1 + (i % 4) * 0.5
-        const radius = 0.7 + Math.random() * 0.3
+      {/* More leaves! */}
+      {[...Array(50)].map((_, i) => {
+        const angle = (i / 50) * Math.PI * 2
+        const y = 1 + (i % 8) * 0.5
+        const radius = 0.7 + Math.random() * 0.8
         return (
           <Leaves
             key={i}
@@ -169,16 +184,22 @@ function Tree() {
         )
       })}
 
-      {/* Magic sparkles */}
+      {/* More sparkles! */}
+      <Sparkles
+        count={100}
+        scale={[5, 6, 5]}
+        size={6}
+        speed={0.2}
+        color="#00ffff"
+      />
       <Sparkles
         count={50}
-        scale={[3, 4, 3]}
+        scale={[4, 5, 4]}
         size={4}
-        speed={0.4}
-        color="#fff"
+        speed={0.3}
+        color="#ff00ff"
       />
 
-      {/* Wise owl */}
       <Owl />
     </group>
   )
@@ -186,14 +207,25 @@ function Tree() {
 
 export default function MagicalTree() {
   return (
-    <div className="w-full h-[600px]">
+    <div className="w-full h-screen bg-gradient-to-b from-blue-900 via-purple-900 to-black">
       <Canvas
         camera={{ position: [5, 5, 5], fov: 50 }}
         shadows
+        className="w-full h-full"
       >
+        <color attach="background" args={['#000']} />
+        <fog attach="fog" args={['#000', 5, 30]} />
+        
         <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} />
+        <pointLight position={[10, 10, 10]} intensity={2} color="#00ffff" />
+        <pointLight position={[-10, -10, -10]} intensity={1} color="#ff00ff" />
+        <spotLight
+          position={[0, 10, 0]}
+          intensity={4}
+          angle={0.6}
+          penumbra={1}
+          color="#ffffff"
+        />
         
         <Tree />
         
